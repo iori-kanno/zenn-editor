@@ -5,6 +5,7 @@ import {
   generateSlug,
   getWorkingPath,
   generateFileIfNotExist,
+  makeDirIfNotExist,
 } from '../lib/helper';
 import { validateSlug, getSlugErrorMessage } from '../../common/helper';
 
@@ -21,6 +22,7 @@ function parseArgs(argv?: string[]) {
     return arg(
       {
         // Types
+        '--dir': String,
         '--slug': String,
         '--title': String,
         '--type': String,
@@ -55,6 +57,7 @@ export const exec: CliExecFn = (argv) => {
     return;
   }
 
+  const dir = args['--dir'] ? args['--dir'] + '/' : '';
   const slug = args['--slug'] || generateSlug();
   const title = args['--title'] || '';
   const emoji = args['--emoji'] || pickRandomEmoji();
@@ -69,7 +72,8 @@ export const exec: CliExecFn = (argv) => {
   }
 
   const fileName = `${slug}.md`;
-  const relativeFilePath = `articles/${fileName}`;
+  const relativeDirPath = `articles/${dir}`;
+  const relativeFilePath = `${relativeDirPath}${fileName}`;
   const fullFilepath = getWorkingPath(relativeFilePath);
 
   const fileBody =
@@ -85,6 +89,7 @@ export const exec: CliExecFn = (argv) => {
     ].filter(v => v).join('\n') + '\n';
 
   try {
+    makeDirIfNotExist(getWorkingPath(relativeDirPath));
     generateFileIfNotExist(fullFilepath, fileBody);
     if (machineReadable) {
       console.log(relativeFilePath);

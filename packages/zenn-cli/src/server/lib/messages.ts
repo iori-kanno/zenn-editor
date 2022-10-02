@@ -60,6 +60,7 @@ Usage:
   npx zenn new:article [options]
 
 Options:
+  --dir       DIR      サブディレクトリ名
   --slug      SLUG     記事のスラッグ. \`a-z0-9\`とハイフン(\`-\`)とアンダースコア(\`_\`)の12〜50字の組み合わせ
   --title     TITLE    記事のタイトル
   --type      TYPE     記事のタイプ. tech (技術記事) / idea (アイデア記事) のどちらかから選択
@@ -71,7 +72,7 @@ Options:
   --help, -h       このヘルプを表示
 
 Example:
-  npx zenn new:article --slug enjoy-zenn-with-client --title タイトル --type idea --emoji ✨
+  npx zenn new:article --dir test --slug enjoy-zenn-with-client --title タイトル --type idea --emoji ✨
 
   👇  詳細
   https://zenn.dev/zenn/articles/zenn-cli-guide

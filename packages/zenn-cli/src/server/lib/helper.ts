@@ -134,6 +134,10 @@ export function bufferToDataURL(buffer: Buffer, mediaType: string): string {
   return `data:${mediaType};base64,${buffer.toString('base64')}`;
 }
 
+export function makeDirIfNotExist(fullDirPath: string) {
+  fs.mkdirpSync(fullDirPath);
+}
+
 export function generateFileIfNotExist(fullpath: string, content: string) {
   fs.outputFileSync(
     fullpath,
