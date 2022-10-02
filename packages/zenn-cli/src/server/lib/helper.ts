@@ -8,6 +8,8 @@ import { networkInterfaces } from 'os';
 import * as Log from './log';
 import pkg from '../../../package.json';
 
+export const _separator = '___';
+
 export function generateSlug(): string {
   return crypto.randomBytes(7).toString('hex');
 }
@@ -75,7 +77,9 @@ export function listDirnamesOrderByModified(searchDirFullpath: string) {
       return {
         name: dirname,
         time: fs
-          .statSync(path.join(searchDirFullpath, dirname))
+          .statSync(
+            path.join(searchDirFullpath, dirname.replace(_separator, '/'))
+          )
           .ctime.getTime(),
       };
     })
@@ -85,7 +89,17 @@ export function listDirnamesOrderByModified(searchDirFullpath: string) {
 
 export function listFilenames(searchDirFullpath: string) {
   try {
-    const allFiles = fs.readdirSync(searchDirFullpath);
+    console.log('listFilenames', searchDirFullpath);
+    // NOTE: サブディレクトリのファイルも対応とする特殊対応で1階層下のファイルも同階層として返す
+    const allFiles = fs.readdirSync(searchDirFullpath).flatMap((filename) => {
+      const fullpath = `${searchDirFullpath}/${filename}`;
+      if (fs.statSync(fullpath).isDirectory())
+        return fs
+          .readdirSync(fullpath)
+          .map((f) => `${filename}${_separator}${f}`);
+      else return [filename];
+    });
+    console.log('listFilenames done');
     return allFiles;
   } catch (e) {
     return null;
@@ -93,6 +107,7 @@ export function listFilenames(searchDirFullpath: string) {
 }
 
 export function listFilenamesOrderByModified(searchDirFullpath: string) {
+  console.log('listFilenamesOrderByModified', searchDirFullpath);
   const allFiles = listFilenames(searchDirFullpath);
   if (!allFiles) return allFiles;
   return allFiles
@@ -100,7 +115,9 @@ export function listFilenamesOrderByModified(searchDirFullpath: string) {
       return {
         name: filename,
         time: fs
-          .statSync(path.join(searchDirFullpath, filename))
+          .statSync(
+            path.join(searchDirFullpath, filename.replace(_separator, '/'))
+          )
           .ctime.getTime(),
       };
     })
